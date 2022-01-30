@@ -18,8 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('auth/', include('authentication.urls')),
-    # path('reg/', include('registration.urls')),
-    # path('lk/', include('user_profile.urls')),
-    # path('', include('insurance.urls')),
+    path('acc/', include('authentication.urls'), name='account'),
+    # path('lk/', include('users.urls')),
+    path('', include('core.urls'), name='exchange'),
 ]

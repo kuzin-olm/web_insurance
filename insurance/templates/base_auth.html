@@ -1,0 +1,52 @@
+<!doctype html>
+{% load static %}
+<html lang="ru">
+  <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+
+
+        <!-- Custom styles for this template -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/signin.css' %}">
+        <title>{% block title %}{% endblock %} - Incurance</title>
+  </head>
+  <body class="text-center">
+    
+    <main class="container">
+      <div class="row form-signin justify-content-center">
+
+          {% block content %}{% endblock %}
+
+
+        {% if form.errors %}
+          {% for key, value in form.errors.items %}
+            <div class="toast bg-danger text-white border-0 mt-2" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="d-flex">
+                <div class="toast-body">{{ value }}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+          <div>
+            <p class="mt-5 mb-3 text-muted">Insurance {% now 'Y' %}</p>
+          </div>
+      </div>
+
+    </main>
+
+  </body>
+
+<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+<script>
+  var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+  var toastList = toastElList.map(function(toastEl) {
+  // Creates an array of toasts (it only initializes them)
+    return new bootstrap.Toast(toastEl) // No need for options; use the default options
+  });
+ toastList.forEach(toast => toast.show()); // This show them
+</script>
+</html>

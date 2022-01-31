@@ -1,21 +1,30 @@
+from django.contrib.auth import authenticate, login
+from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
-from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
 from .forms import CompanyCreationForm, CompanyAuthenticationForm
+from users.models import Company
 
 
-def register(request):
+class CompanyRegisterView(CreateView):
+    model = Company
+    template_name = 'auth/register.html'
+    form_class = CompanyCreationForm
+    success_url = reverse_lazy('home')
 
-    if request.method == "POST":
-        form = CompanyCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("/")
-    else:
-        form = CompanyCreationForm()
+    def form_valid(self, form):
+        form_edit = super().form_valid(form)
 
-    return render(request, "auth/register.html", {"form": form})
+        username = form.cleaned_data.get('name')
+        password = form.cleaned_data.get('password2')
+
+        if username is not None and password:
+            company_cache = authenticate(username=username, password=password, backend='users.backend.CompanyBackend')
+            if company_cache:
+                login(self.request, company_cache, backend='users.backend.CompanyBackend')
+
+        return form_edit
 
 
 class CompanyLoginView(LoginView):

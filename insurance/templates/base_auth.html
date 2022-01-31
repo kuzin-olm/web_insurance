@@ -19,17 +19,18 @@
 
           {% block content %}{% endblock %}
 
-
-        {% if form.errors %}
-          {% for key, value in form.errors.items %}
+          {% if form.errors %}
             <div class="toast bg-danger text-white border-0 mt-2" role="alert" aria-live="assertive" aria-atomic="true">
               <div class="d-flex">
-                <div class="toast-body">{{ value }}</div>
+                <div class="toast-body">
+                    {% for key, value in form.errors.items %}
+                      {{ value }}
+                    {% endfor %}
+                </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
               </div>
             </div>
-          {% endfor %}
-        {% endif %}
+          {% endif %}
 
           <div>
             <p class="mt-5 mb-3 text-muted">Insurance {% now 'Y' %}</p>

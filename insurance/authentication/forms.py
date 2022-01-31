@@ -1,3 +1,4 @@
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django import forms
 
@@ -55,25 +56,3 @@ class CompanyAuthenticationForm(AuthenticationForm):
                 'id': 'password2'
             }
         )
-
-    def authenticate(self, username=None, password=None):
-        try:
-            company = Company.objects.get(name=username)
-            if company.check_password(password):
-                return company
-            return None
-        except Company.DoesNotExist:
-            return None
-
-    def clean(self):
-        username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-
-        if username is not None and password:
-            self.user_cache = self.authenticate(username=username, password=password)
-            if self.user_cache is None:
-                raise self.get_invalid_login_error()
-            else:
-                self.confirm_login_allowed(self.user_cache)
-
-        return self.cleaned_data

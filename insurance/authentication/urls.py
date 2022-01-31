@@ -1,13 +1,13 @@
 from django.urls import include, path
 
 
-from .views import register, CompanyLoginView, CompanyLogoutView
+from .views import CompanyLoginView, CompanyLogoutView, CompanyRegisterView
 
 
 urlpatterns = [
     path(
         'reg/',
-        register,
+        CompanyRegisterView.as_view(),
         name='company_registration',
     ),
     path(

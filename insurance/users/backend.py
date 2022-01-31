@@ -4,7 +4,6 @@ from .models import Company
 
 
 class CompanyBackend(BaseBackend):
-
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
             username = kwargs.get(Company.USERNAME_FIELD)
@@ -19,7 +18,7 @@ class CompanyBackend(BaseBackend):
                 return user
 
     def user_can_authenticate(self, user):
-        is_active = getattr(user, 'is_active', None)
+        is_active = getattr(user, "is_active", None)
         return is_active or is_active is None
 
     def get_user(self, user_id):

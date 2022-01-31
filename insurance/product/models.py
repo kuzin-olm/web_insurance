@@ -34,7 +34,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=False, verbose_name="продукт актуален")
 
     def __str__(self):
-        return f"<Продукт: {self.name}>"
+        return f"<Продукт: {self.name} категории: {self.category.name}>"
 
 
 class ProductOption(models.Model):

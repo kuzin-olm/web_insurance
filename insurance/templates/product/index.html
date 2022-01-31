@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+<main>
+  <section class="container text-center mt-5 mb-5">
+    <figure class="text-center pt-4">
+      <blockquote class="blockquote">
+        <p style="color: #444251;">Тут будут фильтры</p>
+      </blockquote>
+    </figure>
+  </section>
+
+  <div class="container-xl">
+    {% if object_list %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
+
+      {% for product_option in object_list %}
+      <div class="col">
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ product_option.product.name|title }} ({{ product_option.product.category.name }})</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Ставка: {{ product_option.rate }} %</h6>
+            <h6 class="card-subtitle mb-2 text-muted">Срок: {{ product_option.expire }} мес.</h6>
+            <h6 class="card-subtitle mb-2 text-muted">Цена: {{ product_option.price }} руб.</h6>
+            <p class="card-text">{{ product_option.product.description|truncatechars:90 }}</p>
+            <a href="{% url 'product_detail' product_option.pk %}" class="card-link">Подробнее</a>
+            {% if request.user ==  product_option.product.company %}
+            <a href="#" class="card-link">Редактировать</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <h3 class="d-flex justify-content-center">Ничего не найдено</h3>
+    {% endif %}
+  </div>
+
+
+<section class="container text-center">
+</section>
+
+</main>
+{% endblock %}

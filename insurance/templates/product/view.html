@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<main>
+  <section class="container text-center my-5">
+    <div class="pt-5">
+      <h1>{{ product_option.product.name|title }} от {{ product_option.product.company.name|title }}</h1>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-12 col-xl-6">
+        <div class="">
+          <p class="fw-normal">{{ product_option.product.description }}</p>
+        </div>
+      </div>
+      <div class="col-12 col-xl-6">
+        <div class="text-end">
+          <h5 class="fw-light">Категория: <strong>{{ product_option.product.category.name }}</strong></h5>
+          <h5 class="fw-light">Ставка: <strong>{{ product_option.rate }} %</strong></h5>
+          <h5 class="fw-light">Срок: <strong>{{ product_option.expire }} мес.</strong></h5>
+          <h5 class="fw-light">Стоимость: <strong>{{ product_option.price }} руб.</strong></h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="container-xl">
+    <div class="row">
+      <div class="d-flex justify-content-center">
+        <a href="" class="btn btn-outline-secondary m-1"><< На главную</a>
+        {% if request.user ==  product_option.product.company %}
+        <a href="" class="btn btn-outline-secondary m-1">Редактировать</a>
+        <a href="" class="btn btn-outline-danger m-1" onclick="return confirm('Точно удалить?');">Удалить</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+
+  <section class="container text-center mt-5">
+  </section>
+
+</main>
+{% endblock %}

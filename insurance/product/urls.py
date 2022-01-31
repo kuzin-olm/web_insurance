@@ -1,12 +1,9 @@
 from django.urls import include, path
 
-from .views import HomeView
+from .views import ProductOptionView, ProductOptionDetailView
 
 
 urlpatterns = [
-    path(
-        "",
-        HomeView.as_view(),
-        name="home",
-    ),
+    path("", ProductOptionView.as_view(), name="home"),
+    path("product/<int:pk>/", ProductOptionDetailView.as_view(), name="product_detail"),
 ]

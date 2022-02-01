@@ -30,7 +30,7 @@
             <p class="card-text">{{ product_option.product.description|truncatechars:90 }}</p>
             <a href="{% url 'product_detail' product_option.pk %}" class="card-link">Подробнее</a>
             {% if request.user ==  product_option.product.company %}
-            <a href="#" class="card-link">Редактировать</a>
+            <a href="{% url 'product_update' product_option.pk %}" class="card-link">Редактировать</a>
             {% endif %}
           </div>
         </div>

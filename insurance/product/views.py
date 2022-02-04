@@ -1,18 +1,22 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, ListView, DetailView, UpdateView
+from django.shortcuts import redirect
+from django.views.generic import ListView, DetailView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.urls import reverse_lazy
 from .models import ProductOption, Product
 from .forms import ProductOptionForm
 
 
-class LoginCompanyMixin(LoginRequiredMixin):
+class ValidateAuthCompany(LoginRequiredMixin):
     def validate_product_option(self):
-        product_option = ProductOption.objects.get(pk=self.kwargs.get("pk"))
-        if self.request.user == product_option.product.company:
-            return True
-        return False
+        """
+        Проверка, что авторизованный пользователь(компания) относится к конфигурации продукта.
+        """
+        is_current_company = ProductOption.objects.filter(
+            pk=self.kwargs.get("pk"), product__company=self.request.user
+        ).exists()
+
+        return is_current_company
 
 
 class ProductOptionView(ListView):
@@ -26,7 +30,7 @@ class ProductOptionDetailView(DetailView):
     template_name = "product/view.html"
 
 
-class ProductOptionUpdateView(LoginCompanyMixin, UpdateView):
+class ProductOptionUpdateView(ValidateAuthCompany, UpdateView):
     model = ProductOption
     context_object_name = "product_option"
     template_name = "product/view.html"
@@ -52,7 +56,7 @@ class ProductOptionUpdateView(LoginCompanyMixin, UpdateView):
         return reverse_lazy("product_detail", kwargs={"pk": self.kwargs.get("pk")})
 
 
-class ProductOptionDeleteView(LoginCompanyMixin, DeleteView):
+class ProductOptionDeleteView(ValidateAuthCompany, DeleteView):
     model = ProductOption
     success_url = reverse_lazy("home")
 

@@ -5,9 +5,9 @@ from .models import Company
 
 class CompanyBackend(BaseBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
-        if username is None:
+        if not username:
             username = kwargs.get(Company.USERNAME_FIELD)
-        if username is None or password is None:
+        if not username or not password:
             return
         try:
             user = Company._default_manager.get_by_natural_key(username)

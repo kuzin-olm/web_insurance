@@ -43,7 +43,10 @@ class ProductOption(models.Model):
         verbose_name_plural = "Конфигурации продуктов"
 
     product = models.ForeignKey(
-        to=Product, verbose_name="продукт", on_delete=models.CASCADE
+        to=Product,
+        verbose_name="продукт",
+        on_delete=models.CASCADE,
+        related_name="product_option",
     )
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="цена")
     expire = models.IntegerField(verbose_name="срок предоставления услуги")

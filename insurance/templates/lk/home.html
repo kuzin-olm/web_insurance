@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<main>
+  <section class="container text-center my-5">
+    <div class="pt-5">
+        <h1>Личный кабинет: {{ request.user.name|title }}</h1>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="accordion" id="accordionPanelsStayOpenExample">
+      <h3>Список продуктов</h3>
+      {% for product in products %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-heading{{ forloop.counter }}">
+          <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
+            Продукт: {{ product.name }} (категория: {{ product.category.name }})
+          </button>
+        </h2>
+        <div id="panelsStayOpen-collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
+          <div class="accordion-body">
+            <p><strong>Описание продукта </strong><a href="{% url 'product_update' product.pk %}" class="link-primary"><редактировать продукт></a></p>
+            <p>{{ product.description|truncatechars:300 }}</p>
+
+            <table class="table table-hover caption-top">
+              <caption>Список конфигураций</caption>
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Цена, руб</th>
+                  <th scope="col">Срок, мес</th>
+                  <th scope="col">Ставка, %</th>
+                  <th scope="col">Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for option in product.product_option.all %}
+                  <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ option.price }}</td>
+                    <td>{{ option.expire }}</td>
+                    <td>{{ option.rate }}</td>
+                    <td>
+                      <a href="{% url 'product_option_update' option.pk %}" class="link-primary">Редактировать</a>
+                      <a href="{% url 'product_option_delete' option.pk %}" class="link-danger" onclick="return confirm('Точно удалить?');">Удалить</a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      </div>
+      {% endfor  %}
+
+    </div>
+  </section>
+
+
+  <section class="container text-center mt-5">
+  </section>
+
+</main>
+{% endblock %}

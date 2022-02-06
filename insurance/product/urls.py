@@ -12,6 +12,8 @@ from .views import (
     ProductDeleteView,
     CabinetView,
     ProductCategoryCreateView,
+    ResponseSuccessView,
+    ProductResponseView
 )
 
 
@@ -62,5 +64,15 @@ urlpatterns = [
         "category/create/",
         ProductCategoryCreateView.as_view(),
         name="product_category_create",
+    ),
+    path(
+        "response/<int:pk>/success/",
+        ResponseSuccessView.as_view(),
+        name="product_response_success",
+    ),
+    path(
+        "response/",
+        ProductResponseView.as_view(),
+        name="product_response",
     ),
 ]

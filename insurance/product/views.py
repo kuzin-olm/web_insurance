@@ -208,7 +208,8 @@ class ProductResponseView(ValidateAuthCompany, TemplateView):
     template_name = "product_response/all_responses.html"
 
     def get_context_data(self, **kwargs):
-        product_responses = ProductResponse.objects.filter(product_option__product__company=self.request.user)
-        kwargs["product_responses"] = product_responses
+        if self.auth_is_company():
+            product_responses = ProductResponse.objects.filter(product_option__product__company=self.request.user)
+            kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)
 

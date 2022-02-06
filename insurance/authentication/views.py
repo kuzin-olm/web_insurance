@@ -19,7 +19,7 @@ class CompanyRegisterView(CreateView):
         username = form.cleaned_data.get("name")
         password = form.cleaned_data.get("password2")
 
-        if username is not None and password:
+        if username and password:
             company_cache = authenticate(
                 username=username,
                 password=password,

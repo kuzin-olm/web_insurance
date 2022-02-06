@@ -1,40 +1,10 @@
-from django.contrib.auth.models import AbstractUser, AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from .managers import CompanyManager
-import django.contrib.auth.views
-
-# class CompanyUser(AbstractUser):
-#
-#     username_validator = UnicodeUsernameValidator()
-#
-#     username = models.CharField(
-#         _('username'),
-#         max_length=150,
-#         help_text=_('Необходимо. 150 символов или меньше. Только буквы, цифры и @/./+/-/_.'),
-#         validators=[username_validator],
-#         error_messages={
-#             'unique': _("A user with that username already exists."),
-#         },
-#     )
-#     email = models.EmailField(
-#         _('email address'),
-#         unique=True,
-#         error_messages={
-#             'unique': _("A user with that username already exists."),
-#         },
-#     )
-#
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-#
-#     objects = CompanyUserManager()
-#
-#     def __str__(self):
-#         return self.email
 
 
 class Company(AbstractBaseUser):

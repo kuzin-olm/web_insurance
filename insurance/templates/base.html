@@ -27,13 +27,26 @@
 
           {% if request.user.is_authenticated %}
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% url 'product_category_create' as product_category_create_url %}
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="">Добавить услугу</a>
+              <a class="nav-link {% if product_category_create_url == request.path %}disabled{% endif %}" aria-current="page" href="{% url 'product_category_create' %}">Новая категория</a>
+            </li>
+            {% url 'product_create' as product_create_url %}
+            <li class="nav-item">
+              <a class="nav-link {% if product_create_url == request.path %}disabled{% endif %}" aria-current="page" href="{% url 'product_create' %}">Новый продукт</a>
+            </li>
+            {% url 'product_option_create' as product_option_create_url %}
+            <li class="nav-item">
+              <a class="nav-link {% if product_option_create_url == request.path %}disabled{% endif %}" aria-current="page" href="{% url 'product_option_create' %}">Новая конфигурация продукта</a>
+            </li>
+            {% url 'product_response' as product_response_url %}
+            <li class="nav-item">
+              <a class="nav-link {% if product_response_url == request.path %}disabled{% endif %}" aria-current="page" href="{% url 'product_response' %}">Отклики</a>
             </li>
           </ul>
 
           <div class="d-flex">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{{ request.user.name }}</a>
+            <a class="nav-link" href="{% url 'lk_home' %}" tabindex="-1" aria-disabled="true">{{ request.user.name }}</a>
             <a href="{% url 'company_logout' %}" class="btn btn-outline-danger m-1 my-sm-0">Выйти</a>
           </div>
 

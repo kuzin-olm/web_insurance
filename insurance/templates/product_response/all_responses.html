@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<main>
+  <section class="container text-center my-5">
+    <div class="pt-5">
+        <h1>Отклики на ваши продукты</h1>
+    </div>
+  </section>
+
+  <section class="container">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Продукт</th>
+          <th scope="col">Ф.И.О</th>
+          <th scope="col">Эл.почта</th>
+          <th scope="col">Контактный телефон</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product_resp in product_responses %}
+          <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>
+              <a href="{% url 'product_option_detail' product_resp.product_option.pk %}" class="link-primary">{{ product_resp.product_option.product.name }} ({{ product_resp.product_option.product.category.name }})</a>
+            </td>
+            <td>{{ product_resp.full_name }}</td>
+            <td>{{ product_resp.email }}</td>
+            <td>{{ product_resp.phone }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+
+  <section class="container text-center mt-5">
+  </section>
+
+</main>
+{% endblock %}

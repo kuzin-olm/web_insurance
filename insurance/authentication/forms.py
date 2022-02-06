@@ -1,10 +1,7 @@
-from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import (
     UserCreationForm,
-    UserChangeForm,
     AuthenticationForm,
 )
-from django import forms
 
 from users.models import Company
 

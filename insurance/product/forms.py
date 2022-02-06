@@ -1,6 +1,36 @@
 from django import forms
 
-from .models import ProductOption
+from .models import ProductOption, Product, ProductCategory, ProductResponse
+
+
+class ProductCategoryForm(forms.ModelForm):
+    class Meta:
+        model = ProductCategory
+        fields = ("name",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["name"].widget.attrs.update({"class": "form-control"})
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = (
+            "category",
+            "name",
+            "description",
+            "is_active",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["category"].widget.attrs.update({"class": "form-select"})
+        self.fields["name"].widget.attrs.update({"class": "form-control"})
+        self.fields["description"].widget.attrs.update({"class": "form-control"})
+        self.fields["is_active"].widget.attrs.update({"class": "form-check-input"})
 
 
 class ProductOptionForm(forms.ModelForm):
@@ -22,3 +52,20 @@ class ProductOptionForm(forms.ModelForm):
         self.fields["expire"].widget.attrs.update({"class": "form-control"})
         self.fields["rate"].widget.attrs.update({"class": "form-control"})
         self.fields["is_active"].widget.attrs.update({"class": "form-check-input"})
+
+
+class ProductResponseForm(forms.ModelForm):
+    class Meta:
+        model = ProductResponse
+        fields = (
+            "full_name",
+            "email",
+            "phone"
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["full_name"].widget.attrs.update({"class": "form-control"})
+        self.fields["email"].widget.attrs.update({"class": "form-control"})
+        self.fields["phone"].widget.attrs.update({"class": "form-control"})

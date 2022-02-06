@@ -28,10 +28,7 @@
             <h6 class="card-subtitle mb-2 text-muted">Срок: {{ product_option.expire }} мес.</h6>
             <h6 class="card-subtitle mb-2 text-muted">Цена: {{ product_option.price }} руб.</h6>
             <p class="card-text">{{ product_option.product.description|truncatechars:90 }}</p>
-            <a href="{% url 'product_detail' product_option.pk %}" class="card-link">Подробнее</a>
-            {% if request.user ==  product_option.product.company %}
-            <a href="{% url 'product_update' product_option.pk %}" class="card-link">Редактировать</a>
-            {% endif %}
+            <a href="{% url 'product_option_detail' product_option.pk %}" class="card-link">Подробнее</a>
           </div>
         </div>
       </div>

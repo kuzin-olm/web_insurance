@@ -95,6 +95,40 @@
   {% endif %}
 
 
+  {% if form_response %}
+  <div class="container mt-5">
+
+    <div class="col-xl-4 offset-xl-4 mb-2 text-center">
+      <h3>Форма для отклика</h3>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="col-xl-4 offset-xl-4 mb-2">
+        <label for="{{ form_response.full_name.id_for_label }}" class="form-label">Ф.И.О.</label>
+        {{ form_response.full_name }}
+      </div>
+
+      <div class="col-xl-4 offset-xl-4 mb-2">
+        <label for="{{ form_response.email.id_for_label }}" class="form-label">Эл.почта</label>
+        {{ form_response.email }}
+      </div>
+
+      <div class="col-xl-4 offset-xl-4 mb-2">
+        <label for="{{ form_response.phone.id_for_label }}" class="form-label">Контактный телефон</label>
+        {{ form_response.phone }}
+      </div>
+
+      <div class="col-xl-4 offset-xl-4 mb-2 mt-4">
+        <button class="btn w-100 btn-success" type="submit">Откликнуться</button>
+      </div>
+
+    </form>
+  </div>
+  {% endif %}
+
+
   <section class="container text-center mt-5">
   </section>
 

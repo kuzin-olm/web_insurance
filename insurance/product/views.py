@@ -3,8 +3,8 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView, CreateView
 from django.urls import reverse_lazy
-from .models import ProductOption, Product, ProductCategory
-from .forms import ProductOptionForm, ProductForm, ProductCategoryForm
+from .models import ProductOption, Product, ProductCategory, ProductResponse
+from .forms import ProductOptionForm, ProductForm, ProductCategoryForm, ProductResponseForm
 from users.models import Company
 
 
@@ -111,6 +111,24 @@ class ProductOptionDetailView(DetailView):
     context_object_name = "product_option"
     template_name = "product_option/view.html"
 
+    def get_context_data(self, **kwargs):
+        form_response = ProductResponseForm()
+        kwargs["form_response"] = form_response
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form_response = ProductResponseForm(request.POST)
+        if form_response.is_valid():
+            product_response = form_response.save(commit=False)
+            product_response.product_option = self.model.objects.get(pk=self.kwargs["pk"])
+            product_response.save()
+            return redirect(
+                reverse_lazy("product_response_success", kwargs={"pk": product_response.pk})
+            )
+        return redirect(
+            reverse_lazy("product_option_detail", kwargs={"pk": self.kwargs.get("pk")})
+        )
+
 
 class ProductOptionCreateView(ValidateAuthCompany, CreateView):
     model = ProductOption
@@ -178,3 +196,19 @@ class CabinetView(ValidateAuthCompany, TemplateView):
         products = Product.objects.filter(company=self.request.user).order_by("id")
         kwargs["products"] = products
         return super().get_context_data(**kwargs)
+
+
+class ResponseSuccessView(DeleteView):
+    model = ProductResponse
+    context_object_name = "product_response"
+    template_name = "product_response/success.html"
+
+
+class ProductResponseView(ValidateAuthCompany, TemplateView):
+    template_name = "product_response/all_responses.html"
+
+    def get_context_data(self, **kwargs):
+        product_responses = ProductResponse.objects.filter(product_option__product__company=self.request.user)
+        kwargs["product_responses"] = product_responses
+        return super().get_context_data(**kwargs)
+

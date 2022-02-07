@@ -14,6 +14,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - elasticsearch
 
 
   postgres:
@@ -40,7 +41,19 @@ services:
       - admin-data:/var/lib/pgadmin
     restart: unless-stopped
 
+  elasticsearch:
+    container_name: es
+    image: elasticsearch:7.17.0
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
 
 volumes:
   postgres-data:
   admin-data:
+  es-data:

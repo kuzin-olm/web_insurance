@@ -45,6 +45,11 @@
             </li>
           </ul>
 
+          <form class="d-flex" action="{% url 'search_result' %}" method="get">
+            <input class="form-control me-2" type="search" name="q" placeholder="Поиск" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit" hidden>Поиск</button>
+          </form>
+
           <div class="d-flex">
             <a class="nav-link" href="{% url 'lk_home' %}" tabindex="-1" aria-disabled="true">{{ request.user.name }}</a>
             <a href="{% url 'company_logout' %}" class="btn btn-outline-danger m-1 my-sm-0">Выйти</a>

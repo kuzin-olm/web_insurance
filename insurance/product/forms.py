@@ -57,11 +57,7 @@ class ProductOptionForm(forms.ModelForm):
 class ProductResponseForm(forms.ModelForm):
     class Meta:
         model = ProductResponse
-        fields = (
-            "full_name",
-            "email",
-            "phone"
-        )
+        fields = ("full_name", "email", "phone")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

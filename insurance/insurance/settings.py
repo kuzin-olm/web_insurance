@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "django_elasticsearch_dsl",
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,12 @@ WSGI_APPLICATION = "insurance.wsgi.application"
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
+ELASTICSEARCH_DSL = {"default": {"hosts": env.str("ELASTICSEARCH_URL")}}
+
+ELASTICSEARCH_DSL_INDEX_SETTINGS = {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

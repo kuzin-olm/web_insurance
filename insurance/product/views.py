@@ -4,7 +4,14 @@ from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView, CreateView
 from django.urls import reverse_lazy
 from .models import ProductOption, Product, ProductCategory, ProductResponse
-from .forms import ProductOptionForm, ProductForm, ProductCategoryForm, ProductResponseForm
+from .forms import (
+    ProductOptionForm,
+    ProductForm,
+    ProductCategoryForm,
+    ProductResponseForm,
+)
+from .indexes import ProductOptionDocument
+from elasticsearch_dsl import Q
 from users.models import Company
 
 
@@ -120,10 +127,14 @@ class ProductOptionDetailView(DetailView):
         form_response = ProductResponseForm(request.POST)
         if form_response.is_valid():
             product_response = form_response.save(commit=False)
-            product_response.product_option = self.model.objects.get(pk=self.kwargs["pk"])
+            product_response.product_option = self.model.objects.get(
+                pk=self.kwargs["pk"]
+            )
             product_response.save()
             return redirect(
-                reverse_lazy("product_response_success", kwargs={"pk": product_response.pk})
+                reverse_lazy(
+                    "product_response_success", kwargs={"pk": product_response.pk}
+                )
             )
         return redirect(
             reverse_lazy("product_option_detail", kwargs={"pk": self.kwargs.get("pk")})
@@ -209,7 +220,40 @@ class ProductResponseView(ValidateAuthCompany, TemplateView):
 
     def get_context_data(self, **kwargs):
         if self.auth_is_company():
-            product_responses = ProductResponse.objects.filter(product_option__product__company=self.request.user)
+            product_responses = ProductResponse.objects.filter(
+                product_option__product__company=self.request.user
+            )
             kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)
 
+
+class SearchView(TemplateView):
+    template_name = "search/result.html"
+
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get("q")
+
+        if search:
+            search_result = ProductOptionDocument.search().query(
+                Q(
+                    "bool",
+                    should=[
+                        Q(
+                            "multi_match",
+                            query=search,
+                            fields=[
+                                "product.description^2",
+                                "product.name",
+                                "product.category.name",
+                                "product.company.name",
+                            ],
+                        ),
+                        Q("prefix", product__description=search),
+                        Q("prefix", product__category__name=search),
+                        Q("prefix", product__company__name=search),
+                    ],
+                )
+            )
+
+            kwargs["search_results"] = search_result if search_result.count() else None
+        return super().get(request, *args, **kwargs)

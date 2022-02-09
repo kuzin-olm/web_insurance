@@ -13,7 +13,8 @@ from .views import (
     CabinetView,
     ProductCategoryCreateView,
     ResponseSuccessView,
-    ProductResponseView
+    ProductResponseView,
+    SearchView
 )
 
 
@@ -74,5 +75,10 @@ urlpatterns = [
         "response/",
         ProductResponseView.as_view(),
         name="product_response",
+    ),
+    path(
+        "search/",
+        SearchView.as_view(),
+        name="search_result",
     ),
 ]

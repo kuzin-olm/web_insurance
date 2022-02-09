@@ -11,6 +11,7 @@ from .forms import (
     ProductResponseForm,
 )
 from .indexes import ProductOptionDocument
+from elasticsearch_dsl import Q
 from users.models import Company
 
 
@@ -229,6 +230,30 @@ class ProductResponseView(ValidateAuthCompany, TemplateView):
 class SearchView(TemplateView):
     template_name = "search/result.html"
 
-    def get_context_data(self, **kwargs):
-        kwargs["search_results"] = ProductOptionDocument.search()
-        return super().get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get("q")
+
+        if search:
+            search_result = ProductOptionDocument.search().query(
+                Q(
+                    "bool",
+                    should=[
+                        Q(
+                            "multi_match",
+                            query=search,
+                            fields=[
+                                "product.description^2",
+                                "product.name",
+                                "product.category.name",
+                                "product.company.name",
+                            ],
+                        ),
+                        Q("prefix", product__description=search),
+                        Q("prefix", product__category__name=search),
+                        Q("prefix", product__company__name=search),
+                    ],
+                )
+            )
+
+            kwargs["search_results"] = search_result if search_result.count() else None
+        return super().get(request, *args, **kwargs)

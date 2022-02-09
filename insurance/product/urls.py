@@ -14,7 +14,7 @@ from .views import (
     ProductCategoryCreateView,
     ResponseSuccessView,
     ProductResponseView,
-    SearchView
+    SearchView,
 )
 
 

@@ -53,9 +53,9 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "users.backend.CompanyBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+AUTH_USER_MODEL = 'users.User'
 
 ROOT_URLCONF = "insurance.urls"
 

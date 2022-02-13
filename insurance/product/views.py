@@ -9,16 +9,18 @@ from .forms import (
     ProductForm,
     ProductCategoryForm,
     ProductResponseForm,
+    CompanyForm,
 )
 from .indexes import ProductOptionDocument
 from elasticsearch_dsl import Q
-from users.models import Company
+from users.models import Company, User, Worker
 
 
 class ValidateAuthCompany(LoginRequiredMixin):
     def auth_is_company(self) -> bool:
         """Проверка, что пользователь авторизовался как компания."""
-        return isinstance(self.request.user, Company)
+        # return isinstance(self.request.user, Company)
+        return Worker.objects.filter(user=self.request.user).exists()
 
     def validate_product(self) -> bool:
         """
@@ -28,7 +30,7 @@ class ValidateAuthCompany(LoginRequiredMixin):
         if self.auth_is_company():
 
             is_owner_product = Product.objects.filter(
-                pk=self.kwargs.get("pk"), company=self.request.user
+                pk=self.kwargs.get("pk"), company=self.request.user.worker.company
             ).exists()
 
             return is_owner_product
@@ -40,13 +42,29 @@ class ValidateAuthCompany(LoginRequiredMixin):
         """
 
         if self.auth_is_company():
-
             is_owner_product = ProductOption.objects.filter(
-                pk=self.kwargs.get("pk"), product__company=self.request.user
+                pk=self.kwargs.get("pk"),
+                product__company=self.request.user.worker.company,
             ).exists()
 
             return is_owner_product
         return False
+
+
+class CompanyCreateView(CreateView):
+    model = Company
+    context_object_name = "company"
+    template_name = "company/view.html"
+    form_class = CompanyForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+        worker = Worker(user=self.request.user, company=self.object, is_owner=True)
+        worker.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("home")
 
 
 class ProductCategoryCreateView(ValidateAuthCompany, CreateView):
@@ -65,7 +83,7 @@ class ProductCreateView(ValidateAuthCompany, CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        self.object.company = self.request.user
+        self.object.company = self.request.user.worker.company
         self.object.save()
         return super().form_valid(form)
 
@@ -148,7 +166,9 @@ class ProductOptionCreateView(ValidateAuthCompany, CreateView):
     form_class = ProductOptionForm
 
     def get_form(self, *args, **kwargs):
-        products_current_company = Product.objects.filter(company=self.request.user)
+        products_current_company = Product.objects.filter(
+            company=self.request.user.worker.company
+        )
 
         form = super().get_form(*args, **kwargs)
         form.fields["product"].choices = (
@@ -174,7 +194,9 @@ class ProductOptionUpdateView(ValidateAuthCompany, UpdateView):
         )
 
     def get_form(self, *args, **kwargs):
-        products_current_company = Product.objects.filter(company=self.request.user)
+        products_current_company = Product.objects.filter(
+            company=self.request.user.worker.company
+        )
 
         form = super().get_form(*args, **kwargs)
         form.fields["product"].choices = (
@@ -204,7 +226,9 @@ class CabinetView(ValidateAuthCompany, TemplateView):
     template_name = "lk/home.html"
 
     def get_context_data(self, **kwargs):
-        products = Product.objects.filter(company=self.request.user).order_by("id")
+        products = Product.objects.filter(
+            company=self.request.user.worker.company
+        ).order_by("id")
         kwargs["products"] = products
         return super().get_context_data(**kwargs)
 
@@ -221,7 +245,7 @@ class ProductResponseView(ValidateAuthCompany, TemplateView):
     def get_context_data(self, **kwargs):
         if self.auth_is_company():
             product_responses = ProductResponse.objects.filter(
-                product_option__product__company=self.request.user
+                product_option__product__company=self.request.user.worker.company
             )
             kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)

@@ -1,6 +1,18 @@
 from django import forms
 
 from .models import ProductOption, Product, ProductCategory, ProductResponse
+from users.models import Company
+
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ("name",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["name"].widget.attrs.update({"class": "form-control"})
 
 
 class ProductCategoryForm(forms.ModelForm):

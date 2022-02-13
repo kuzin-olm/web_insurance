@@ -1,20 +1,22 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.utils.translation import ugettext_lazy as _
 
 
-class CompanyManager(BaseUserManager):
-    """
-    Диспетчер моделей компаний, где имя является уникальным идентификатором
-    для аутентификации.
-    """
+class UserManager(BaseUserManager):
+    def create_user(self, email, username, password=None):
+        if not email:
+            raise ValueError("Должна быть электронная почта.")
 
-    def create(self, name, password, **extra_fields):
-        """
-        Создать и сохранитть компанию с указанными именем и паролем.
-        """
-        if not name:
-            raise ValueError(_("Должно быть имя компании"))
-        company = self.model(name=name, **extra_fields)
-        company.set_password(password)
-        company.save()
-        return company
+        user = self.model(email=self.normalize_email(email), username=username)
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, username, password):
+        user = self.create_user(email, password=password, username=username)
+        user.is_active = True
+        user.is_admin = True
+        # user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user

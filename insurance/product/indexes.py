@@ -25,4 +25,4 @@ class ProductOptionDocument(Document):
         model = ProductOption
         fields = ["id", "price", "expire", "is_active"]
 
-        related_models = [Product, ProductCategory, Company]
+        # related_models = [Product, ProductCategory, Company]

@@ -11,7 +11,7 @@
       {% if product_option.pk %}
         <h1>{{ product_option.product.name|title }} от {{ product_option.product.company.name|title }}</h1>
       {% else %}
-        <h1>Компания {{ request.user.name|title }}</h1>
+        <h1>Компания {{ request.user.worker.company.name|title }}</h1>
       {% endif %}
     </div>
   </section>

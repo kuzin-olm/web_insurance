@@ -4,10 +4,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from .managers import CompanyManager
+from .managers import UserManager
 
 
-class Company(AbstractBaseUser):
+class Company(models.Model):
 
     name_validator = UnicodeUsernameValidator()
 
@@ -20,27 +20,81 @@ class Company(AbstractBaseUser):
         ),
         validators=[name_validator],
         error_messages={
-            "unique": _("Такая компания уже зарегестрированна."),
+            "unique": "Такая компания уже зарегестрированна.",
         },
     )
-    is_active = models.BooleanField(
-        _("active"),
-        default=True,
-        help_text=_(
-            "Указывает, следует ли считать этого пользователя активным. "
-            "Отмените выбор вместо удаления учетных записей."
-        ),
-    )
-    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
-    objects = CompanyManager()
-
-    USERNAME_FIELD = "name"
-    REQUIRED_FIELDS = ["name"]
+    registration_date = models.DateTimeField("дата регистрации", default=timezone.now)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = _("компания")
-        verbose_name_plural = _("компании")
+        verbose_name = "компания"
+        verbose_name_plural = "компании"
+
+
+class User(AbstractBaseUser):
+    username_validator = UnicodeUsernameValidator()
+
+    username = models.CharField(
+        verbose_name="имя пользователя",
+        max_length=255,
+        help_text="Обязательное поле. Не более 255 символов. "
+        "Только буквы, цифры и символы @/./+/-/_.",
+        validators=[username_validator],
+    )
+    email = models.EmailField(verbose_name="e-mail", max_length=255, unique=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(
+        "Активный",
+        default=True,
+        help_text=_(
+            "Отметьте, если пользователь должен считаться активным."
+            " Уберите эту отметку вместо удаления учётной записи."
+        ),
+    )
+    registration_date = models.DateTimeField(
+        verbose_name="дата регистрации", default=timezone.now
+    )
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
+
+    def __str__(self):
+        return self.email
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        return self.is_admin
+
+    class Meta:
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+
+
+class Worker(models.Model):
+
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE, verbose_name="работник")
+    company = models.ForeignKey(
+        to=Company,
+        on_delete=models.CASCADE,
+        verbose_name="компания",
+    )
+    is_owner = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Работник"
+        verbose_name_plural = "Работники"

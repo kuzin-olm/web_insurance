@@ -23,6 +23,6 @@ class ProductOptionDocument(Document):
 
     class Django:
         model = ProductOption
-        fields = ["id", "price", "expire", "is_active"]
+        fields = ["id", "price", "expire", "rate", "is_active"]
 
         # related_models = [Product, ProductCategory, Company]

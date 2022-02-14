@@ -11,9 +11,9 @@ from .forms import (
     ProductResponseForm,
     CompanyForm,
 )
-from .indexes import ProductOptionDocument
-from elasticsearch_dsl import Q
+
 from users.models import Company, User, Worker
+from search.forms import SearchFilterForm
 
 
 class ValidateAuthCompany(LoginRequiredMixin):
@@ -129,6 +129,10 @@ class ProductDeleteView(ValidateAuthCompany, DeleteView):
 class ProductOptionView(ListView):
     model = ProductOption
     template_name = "product_option/index.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["filter_form"] = SearchFilterForm
+        return super().get_context_data(**kwargs)
 
 
 class ProductOptionDetailView(DetailView):
@@ -249,35 +253,3 @@ class ProductResponseView(ValidateAuthCompany, TemplateView):
             )
             kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)
-
-
-class SearchView(TemplateView):
-    template_name = "search/result.html"
-
-    def get(self, request, *args, **kwargs):
-        search = request.GET.get("q")
-
-        if search:
-            search_result = ProductOptionDocument.search().query(
-                Q(
-                    "bool",
-                    should=[
-                        Q(
-                            "multi_match",
-                            query=search,
-                            fields=[
-                                "product.description^2",
-                                "product.name",
-                                "product.category.name",
-                                "product.company.name",
-                            ],
-                        ),
-                        Q("prefix", product__description=search),
-                        Q("prefix", product__category__name=search),
-                        Q("prefix", product__company__name=search),
-                    ],
-                )
-            )
-
-            kwargs["search_results"] = search_result if search_result.count() else None
-        return super().get(request, *args, **kwargs)

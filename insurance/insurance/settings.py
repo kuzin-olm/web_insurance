@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "authentication.apps.AuthenticationConfig",
     "users.apps.UsersConfig",
     "product.apps.ProductConfig",
+    "search.apps.SearchConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

@@ -33,6 +33,11 @@
           {{ form.name }}
         </div>
 
+        <div class="col-xl-4 offset-xl-4 mb-2">
+          <label for="{{ form.email.id_for_label }}" class="form-label">Email компании</label>
+          {{ form.email }}
+        </div>
+
         <div class="col-xl-4 offset-xl-4">
           {% if company.pk %}
           <a href="{% url 'lk_home' %}" class="btn btn-outline-secondary">В кабинет</a>

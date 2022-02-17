@@ -7,12 +7,13 @@ from users.models import Company
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ("name",)
+        fields = ("name", "email")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["name"].widget.attrs.update({"class": "form-control"})
+        self.fields["email"].widget.attrs.update({"class": "form-control"})
 
 
 class ProductCategoryForm(forms.ModelForm):

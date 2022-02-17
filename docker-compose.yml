@@ -4,6 +4,7 @@ version: "3.8"
 services:
   web:
     container_name: insurance
+    restart: unless-stopped
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     env_file:
@@ -15,6 +16,37 @@ services:
     depends_on:
       - postgres
       - elasticsearch
+      - rabbitmq
+
+
+  celery:
+    container_name: celery_web
+    restart: unless-stopped
+    build: .
+    command: celery -A insurance worker -l info -B -E --loglevel=debug --concurrency=4
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      - postgres
+      - elasticsearch
+      - rabbitmq
+
+
+  celery_beat:
+    container_name: celery_beat_web
+    build: .
+    command: celery -A insurance beat -l info
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      - web
+      - postgres
+      - elasticsearch
+      - rabbitmq
 
 
   postgres:
@@ -31,6 +63,7 @@ services:
 
   elasticsearch:
     container_name: es
+    restart: unless-stopped
     image: elasticsearch:7.17.0
     env_file:
       - .env
@@ -48,7 +81,23 @@ services:
       - es-data:/usr/share/elasticsearch/data
 
 
+  rabbitmq:
+    container_name: rmq
+    restart: unless-stopped
+    image: rabbitmq:3.9-management-alpine
+    env_file:
+      - .env
+    ports:
+      # AMQP protocol port
+      - 5672:5672
+      # HTTP management UI
+      - 15672:15672
+    volumes:
+      - rmq-data:/var/lib/rabbitmq/
+
+
 volumes:
   postgres-data:
   admin-data:
   es-data:
+  rmq-data:

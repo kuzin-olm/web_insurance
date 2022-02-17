@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "django_elasticsearch_dsl",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -122,6 +123,23 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Europe/Moscow"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_BROKER_URL = env.str("RABBITMQ_AMQP_URL")
+
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
+
+
+# Email
+
+SENDGRID_API_KEY = env.str("SENDGRID_API_KEY")
+SENDGRID_SENDER_MAIL = env.str("SENDGRID_SENDER_MAIL")
 
 
 # Static files (CSS, JavaScript, Images)

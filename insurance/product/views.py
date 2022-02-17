@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView, CreateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .models import ProductOption, Product, ProductCategory, ProductResponse
 from .forms import (
     ProductOptionForm,
@@ -14,6 +14,8 @@ from .forms import (
 
 from users.models import Company, User, Worker
 from search.forms import SearchFilterForm
+
+from .tasks import send_mail_on_response_product
 
 
 class ValidateAuthCompany(LoginRequiredMixin):
@@ -153,6 +155,23 @@ class ProductOptionDetailView(DetailView):
                 pk=self.kwargs["pk"]
             )
             product_response.save()
+
+            # отправка уведомления на почту компании о новом отклике
+            to = product_response.product_option.product.company.email
+            fullname = product_response.full_name
+            phone = product_response.phone
+            email = product_response.email
+            url_product = request.build_absolute_uri(
+                reverse(
+                    "product_option_detail",
+                    kwargs={"pk": product_response.product_option.pk},
+                )
+            )
+
+            send_mail_on_response_product.apply_async(
+                (fullname, phone, email, url_product, to)
+            )
+
             return redirect(
                 reverse_lazy(
                     "product_response_success", kwargs={"pk": product_response.pk}
@@ -250,6 +269,6 @@ class ProductResponseView(ValidateAuthCompany, TemplateView):
         if self.auth_is_company():
             product_responses = ProductResponse.objects.filter(
                 product_option__product__company=self.request.user.worker.company
-            )
+            ).order_by("-id")
             kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)

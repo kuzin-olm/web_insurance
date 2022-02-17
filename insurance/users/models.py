@@ -24,6 +24,8 @@ class Company(models.Model):
         },
     )
 
+    email = models.EmailField(verbose_name="email компании")
+
     registration_date = models.DateTimeField("дата регистрации", default=timezone.now)
 
     def __str__(self):

@@ -176,7 +176,14 @@ class ProductOptionDetailView(DetailView):
             )
 
             send_mail_on_response_product.apply_async(
-                (fullname, phone, email, url_product, to)
+                (fullname, phone, email, url_product, to),
+                retry=True,
+                retry_policy={
+                    "max_retries": 5,
+                    "interval_start": 1,
+                    "interval_step": 5,
+                    "interval_max": 15,
+                },
             )
 
             return redirect(

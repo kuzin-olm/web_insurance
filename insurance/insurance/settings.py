@@ -92,6 +92,22 @@ ELASTICSEARCH_DSL_INDEX_SETTINGS = {
     "number_of_replicas": 0,
 }
 
+
+# redis server
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env.str("REDIS_URL"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": env.str("REDIS_PASSWORD"),
+            "SOCKET_CONNECT_TIMEOUT": 60,  # seconds
+            "SOCKET_TIMEOUT": 60,  # seconds
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100, "retry_on_timeout": True}
+        }
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

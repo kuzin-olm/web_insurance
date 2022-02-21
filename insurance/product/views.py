@@ -16,6 +16,10 @@ from users.models import Company, User, Worker
 from search.forms import SearchFilterForm
 
 from .tasks import send_mail_on_response_product
+from .redis import (
+    get_and_incr_view_count_product_option,
+    get_all_view_count_product_option,
+)
 
 
 class ValidateAuthCompany(LoginRequiredMixin):
@@ -145,6 +149,9 @@ class ProductOptionDetailView(DetailView):
     def get_context_data(self, **kwargs):
         form_response = ProductResponseForm()
         kwargs["form_response"] = form_response
+        kwargs["view_count"] = get_and_incr_view_count_product_option(
+            pk=self.kwargs["pk"]
+        )
         return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -253,6 +260,12 @@ class CabinetView(ValidateAuthCompany, TemplateView):
             company=self.request.user.worker.company
         ).order_by("id")
         kwargs["products"] = products
+
+        view_counts = get_all_view_count_product_option()
+        kwargs["view_counts"] = {
+            key.split("_")[-1]: value for key, value in view_counts.items()
+        }
+
         return super().get_context_data(**kwargs)
 
 

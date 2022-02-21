@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "django_elasticsearch_dsl",
     "django_celery_results",
 ]
@@ -57,7 +56,7 @@ MIDDLEWARE = [
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 ROOT_URLCONF = "insurance.urls"
 
@@ -98,13 +97,17 @@ CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": env.str("REDIS_URL"),
+        "TIMEOUT": None,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "PASSWORD": env.str("REDIS_PASSWORD"),
             "SOCKET_CONNECT_TIMEOUT": 60,  # seconds
             "SOCKET_TIMEOUT": 60,  # seconds
-            "CONNECTION_POOL_KWARGS": {"max_connections": 100, "retry_on_timeout": True}
-        }
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+        },
     }
 }
 

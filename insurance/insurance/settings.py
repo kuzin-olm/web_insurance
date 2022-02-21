@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "django_elasticsearch_dsl",
     "django_celery_results",
 ]
@@ -57,7 +56,7 @@ MIDDLEWARE = [
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 ROOT_URLCONF = "insurance.urls"
 
@@ -90,6 +89,26 @@ ELASTICSEARCH_DSL = {"default": {"hosts": env.str("ELASTICSEARCH_URL")}}
 ELASTICSEARCH_DSL_INDEX_SETTINGS = {
     "number_of_shards": 1,
     "number_of_replicas": 0,
+}
+
+
+# redis server
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env.str("REDIS_URL"),
+        "TIMEOUT": None,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": env.str("REDIS_PASSWORD"),
+            "SOCKET_CONNECT_TIMEOUT": 60,  # seconds
+            "SOCKET_TIMEOUT": 60,  # seconds
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+        },
+    }
 }
 
 # Password validation

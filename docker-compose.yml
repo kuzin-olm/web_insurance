@@ -12,11 +12,12 @@ services:
     volumes:
       - .:/code
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
       - postgres
       - elasticsearch
       - rabbitmq
+      - redis
 
 
   celery:
@@ -32,6 +33,7 @@ services:
       - postgres
       - elasticsearch
       - rabbitmq
+      - redis
 
 
   celery_beat:
@@ -47,6 +49,7 @@ services:
       - postgres
       - elasticsearch
       - rabbitmq
+      - redis
 
 
   postgres:
@@ -76,7 +79,7 @@ services:
         soft: -1
         hard: -1
     ports:
-      - 9200:9200
+      - "9200:9200"
     volumes:
       - es-data:/usr/share/elasticsearch/data
 
@@ -89,11 +92,24 @@ services:
       - .env
     ports:
       # AMQP protocol port
-      - 5672:5672
+      - "5672:5672"
       # HTTP management UI
-      - 15672:15672
+      - "15672:15672"
     volumes:
       - rmq-data:/var/lib/rabbitmq/
+
+
+  redis:
+    container_name: redis
+    image: redis:7.0-rc1-alpine
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: redis-server --save 60 1 --appendonly yes --loglevel notice --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
 
 
 volumes:
@@ -101,3 +117,4 @@ volumes:
   admin-data:
   es-data:
   rmq-data:
+  redis-data:

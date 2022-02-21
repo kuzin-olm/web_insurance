@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load filters %}
 
 {% block header %}
   <h1>{% block title %}{% endblock %}</h1>
@@ -35,6 +36,7 @@
                   <th scope="col">Цена, руб</th>
                   <th scope="col">Срок, мес</th>
                   <th scope="col">Ставка, %</th>
+                  <th scope="col">Просмотры</th>
                   <th scope="col">Действия</th>
                 </tr>
               </thead>
@@ -45,6 +47,7 @@
                     <td>{{ option.price }}</td>
                     <td>{{ option.expire }}</td>
                     <td>{{ option.rate }}</td>
+                    <td>{{ view_counts|get_item:option.pk }}</td>
                     <td>
                       <a href="{% url 'product_option_update' option.pk %}" class="link-primary">Редактировать</a>
                       <a href="{% url 'product_option_delete' option.pk %}" class="link-danger" onclick="return confirm('Точно удалить?');">Удалить</a>

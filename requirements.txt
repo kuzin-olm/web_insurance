@@ -9,3 +9,6 @@ django-elasticsearch-dsl>=7.0.0,<8.0.0
 celery==5.2.3
 django-celery-results==2.2.0
 sendgrid==6.9.6
+
+redis==4.1.4
+django-redis==5.2.0

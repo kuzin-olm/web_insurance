@@ -7,12 +7,64 @@
 
 {% block content %}
 <main>
-  <section class="container text-center mt-5 mb-5">
-    <figure class="text-center pt-4">
-      <blockquote class="blockquote">
-        <p style="color: #444251;">Тут будут фильтры</p>
-      </blockquote>
-    </figure>
+  <section class="container mt-5 mb-3">
+    {% if filter_form %}
+    <div class="container pt-4">
+      <form action="{% url 'search_result' %}" method="post">
+        {% csrf_token %}
+
+        <a class="" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Использовать фильтр</a>
+        <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Фильтр</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+
+            <div class="mb-2">
+              <label for="{{ filter_form.company.id_for_label }}" class="form-label">компания</label>
+              {{ filter_form.company }}
+            </div>
+
+            <div class="mb-2">
+              <label for="{{ filter_form.category.id_for_label }}" class="form-label">категория</label>
+              {{ filter_form.category }}
+            </div>
+
+            <label class="form-label">цена</label>
+            <div class="input-group mb-2">
+              <span class="input-group-text">от</span>
+              {{ filter_form.price_gte }}
+              <span class="input-group-text">до</span>
+              {{ filter_form.price_lte }}
+            </div>
+
+            <label class="form-label">срок</label>
+            <div class="input-group mb-2">
+              <span class="input-group-text">от</span>
+              {{ filter_form.expire_gte }}
+              <span class="input-group-text">до</span>
+              {{ filter_form.expire_lte }}
+            </div>
+
+            <label class="form-label">ставка</label>
+            <div class="input-group mb-2">
+              <span class="input-group-text">от</span>
+              {{ filter_form.rate_gte }}
+              <span class="input-group-text">до</span>
+              {{ filter_form.rate_lte }}
+            </div>
+
+            <div class="mt-4">
+              <button class="btn btn-success w-100" type="submit">Применить фильтр</button>
+            </div>
+
+          </div>
+        </div>
+
+      </form>
+    </div>
+    {% endif %}
   </section>
 
   <div class="container-xl">

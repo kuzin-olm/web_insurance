@@ -1,15 +1,13 @@
 from django.urls import path
 
-
-from .views import CompanyLoginView, CompanyLogoutView, CompanyRegisterView
-
+from .views import UserRegisterView, UserLogoutView, UserLoginView
 
 urlpatterns = [
     path(
         "reg/",
-        CompanyRegisterView.as_view(),
-        name="company_registration",
+        UserRegisterView.as_view(),
+        name="user_registration",
     ),
-    path("login/", CompanyLoginView.as_view(), name="company_login"),
-    path("logout/", CompanyLogoutView.as_view(), name="company_logout"),
+    path("login/", UserLoginView.as_view(), name="user_login"),
+    path("logout/", UserLogoutView.as_view(), name="user_logout"),
 ]

@@ -1,6 +1,7 @@
 from django.urls import include, path
 
 from .views import (
+    CompanyCreateView,
     ProductOptionView,
     ProductOptionDetailView,
     ProductOptionDeleteView,
@@ -13,12 +14,17 @@ from .views import (
     CabinetView,
     ProductCategoryCreateView,
     ResponseSuccessView,
-    ProductResponseView
+    ProductResponseView,
 )
 
 
 urlpatterns = [
     path("", ProductOptionView.as_view(), name="home"),
+    path(
+        "company/create/",
+        CompanyCreateView.as_view(),
+        name="company_create",
+    ),
     path(
         "product_option/<int:pk>/",
         ProductOptionDetailView.as_view(),

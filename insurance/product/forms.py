@@ -1,6 +1,19 @@
 from django import forms
 
 from .models import ProductOption, Product, ProductCategory, ProductResponse
+from users.models import Company
+
+
+class CompanyForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ("name", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["name"].widget.attrs.update({"class": "form-control"})
+        self.fields["email"].widget.attrs.update({"class": "form-control"})
 
 
 class ProductCategoryForm(forms.ModelForm):
@@ -57,11 +70,7 @@ class ProductOptionForm(forms.ModelForm):
 class ProductResponseForm(forms.ModelForm):
     class Meta:
         model = ProductResponse
-        fields = (
-            "full_name",
-            "email",
-            "phone"
-        )
+        fields = ("full_name", "email", "phone")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

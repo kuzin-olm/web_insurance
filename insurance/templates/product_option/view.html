@@ -11,7 +11,7 @@
       {% if product_option.pk %}
         <h1>{{ product_option.product.name|title }} от {{ product_option.product.company.name|title }}</h1>
       {% else %}
-        <h1>Компания {{ request.user.name|title }}</h1>
+        <h1>Компания {{ request.user.worker.company.name|title }}</h1>
       {% endif %}
     </div>
   </section>
@@ -66,6 +66,7 @@
       <div class="col-12 col-xl-6">
         <div class="">
           <p class="fw-normal">{{ product_option.product.description }}</p>
+          <p>Кол-во просмотров: {{ view_count }}</p>
         </div>
       </div>
       <div class="col-12 col-xl-6">
@@ -84,7 +85,7 @@
     <div class="row">
       <div class="d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-outline-secondary m-1"><< На главную</a>
-        {% if request.user ==  product_option.product.company %}
+        {% if request.user.worker.company ==  product_option.product.company %}
         <a href="{% url 'product_option_update' product_option.pk %}" class="btn btn-outline-secondary m-1">Редактировать опции</a>
         <a href="{% url 'product_option_delete' product_option.pk %}" class="btn btn-outline-danger m-1" onclick="return confirm('Точно удалить?');">Удалить</a>
         {% endif %}

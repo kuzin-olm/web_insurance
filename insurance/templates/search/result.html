@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<main>
+  <section class="container text-center my-5">
+    <div class="pt-5">
+        <h1>Результаты поиска</h1>
+    </div>
+  </section>
+
+  <section class="container">
+    {% if search_results %}
+    <div class="list-group list-group-flush">
+      {% for option in search_results %}
+      <a href="{% url 'product_option_detail' option.id %}" class="list-group-item list-group-item-action" aria-current="true">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">Предложение от: {{ option.product.company.name }}</h5>
+          <small>Категория: {{ option.product.category.name }}</small>
+        </div>
+        <p class="mb-1">{{ option.product.description|truncatechars:250 }}</p>
+        <small>Стоимость <strong>{{ option.price }} руб.</strong> на <strong>{{ option.expire}} мес.</strong></small>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <h3 class="text-center">Упс... ничего не найдено</h3>
+    {% endif %}
+  </section>
+
+
+  <section class="container text-center mt-5">
+  </section>
+
+</main>
+{% endblock %}

@@ -32,12 +32,15 @@ INSTALLED_APPS = [
     "authentication.apps.AuthenticationConfig",
     "users.apps.UsersConfig",
     "product.apps.ProductConfig",
+    "search.apps.SearchConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_elasticsearch_dsl",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -51,9 +54,9 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "users.backend.CompanyBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+AUTH_USER_MODEL = "users.User"
 
 ROOT_URLCONF = "insurance.urls"
 
@@ -81,6 +84,32 @@ WSGI_APPLICATION = "insurance.wsgi.application"
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
+ELASTICSEARCH_DSL = {"default": {"hosts": env.str("ELASTICSEARCH_URL")}}
+
+ELASTICSEARCH_DSL_INDEX_SETTINGS = {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+}
+
+
+# redis server
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env.str("REDIS_URL"),
+        "TIMEOUT": None,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": env.str("REDIS_PASSWORD"),
+            "SOCKET_CONNECT_TIMEOUT": 60,  # seconds
+            "SOCKET_TIMEOUT": 60,  # seconds
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 100,
+                "retry_on_timeout": True,
+            },
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -113,6 +142,23 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Europe/Moscow"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_BROKER_URL = env.str("RABBITMQ_AMQP_URL")
+
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
+
+
+# Email
+
+SENDGRID_API_KEY = env.str("SENDGRID_API_KEY")
+SENDGRID_SENDER_MAIL = env.str("SENDGRID_SENDER_MAIL")
 
 
 # Static files (CSS, JavaScript, Images)

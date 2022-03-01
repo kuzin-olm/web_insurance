@@ -1,4 +1,3 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from django.views.generic.edit import DeleteView, CreateView
@@ -12,6 +11,8 @@ from .forms import (
     CompanyForm,
 )
 
+from .view_mixins import CompanyLoginRequiredMixin
+
 from users.models import Company, User, Worker
 from search.forms import SearchFilterForm
 
@@ -20,41 +21,6 @@ from .redis import (
     get_and_incr_view_count_product_option,
     get_all_view_count_product_option,
 )
-
-
-class ValidateAuthCompany(LoginRequiredMixin):
-    def auth_is_company(self) -> bool:
-        """Проверка, что пользователь авторизовался как компания."""
-        # return isinstance(self.request.user, Company)
-        return Worker.objects.filter(user=self.request.user).exists()
-
-    def validate_product(self) -> bool:
-        """
-        Проверка, что авторизованный пользователь(компания) владелец продукта.
-        """
-
-        if self.auth_is_company():
-
-            is_owner_product = Product.objects.filter(
-                pk=self.kwargs.get("pk"), company=self.request.user.worker.company
-            ).exists()
-
-            return is_owner_product
-        return False
-
-    def validate_product_option(self) -> bool:
-        """
-        Проверка, что авторизованный пользователь(компания) относится к конфигурации продукта.
-        """
-
-        if self.auth_is_company():
-            is_owner_product = ProductOption.objects.filter(
-                pk=self.kwargs.get("pk"),
-                product__company=self.request.user.worker.company,
-            ).exists()
-
-            return is_owner_product
-        return False
 
 
 class CompanyCreateView(CreateView):
@@ -73,7 +39,7 @@ class CompanyCreateView(CreateView):
         return reverse_lazy("home")
 
 
-class ProductCategoryCreateView(ValidateAuthCompany, CreateView):
+class ProductCategoryCreateView(CompanyLoginRequiredMixin, CreateView):
     model = ProductCategory
     context_object_name = "product_category"
     template_name = "product_category/view.html"
@@ -81,7 +47,7 @@ class ProductCategoryCreateView(ValidateAuthCompany, CreateView):
     success_url = reverse_lazy("lk_home")
 
 
-class ProductCreateView(ValidateAuthCompany, CreateView):
+class ProductCreateView(CompanyLoginRequiredMixin, CreateView):
     model = Product
     context_object_name = "product"
     template_name = "product/view.html"
@@ -103,7 +69,7 @@ class ProductDetailView(DetailView):
     template_name = "product/view.html"
 
 
-class ProductUpdateView(ValidateAuthCompany, UpdateView):
+class ProductUpdateView(CompanyLoginRequiredMixin, UpdateView):
     model = Product
     context_object_name = "product"
     template_name = "product/view.html"
@@ -120,7 +86,7 @@ class ProductUpdateView(ValidateAuthCompany, UpdateView):
         return reverse_lazy("product_detail", kwargs={"pk": self.kwargs.get("pk")})
 
 
-class ProductDeleteView(ValidateAuthCompany, DeleteView):
+class ProductDeleteView(CompanyLoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy("lk_home")
 
@@ -196,7 +162,7 @@ class ProductOptionDetailView(DetailView):
         )
 
 
-class ProductOptionCreateView(ValidateAuthCompany, CreateView):
+class ProductOptionCreateView(CompanyLoginRequiredMixin, CreateView):
     model = ProductOption
     context_object_name = "product_option"
     template_name = "product_option/view.html"
@@ -217,7 +183,7 @@ class ProductOptionCreateView(ValidateAuthCompany, CreateView):
         return reverse_lazy("product_option_detail", kwargs={"pk": self.object.id})
 
 
-class ProductOptionUpdateView(ValidateAuthCompany, UpdateView):
+class ProductOptionUpdateView(CompanyLoginRequiredMixin, UpdateView):
     model = ProductOption
     context_object_name = "product_option"
     template_name = "product_option/view.html"
@@ -247,7 +213,7 @@ class ProductOptionUpdateView(ValidateAuthCompany, UpdateView):
         )
 
 
-class ProductOptionDeleteView(ValidateAuthCompany, DeleteView):
+class ProductOptionDeleteView(CompanyLoginRequiredMixin, DeleteView):
     model = ProductOption
     success_url = reverse_lazy("lk_home")
 
@@ -259,7 +225,7 @@ class ProductOptionDeleteView(ValidateAuthCompany, DeleteView):
         )
 
 
-class CabinetView(ValidateAuthCompany, TemplateView):
+class CabinetView(CompanyLoginRequiredMixin, TemplateView):
     template_name = "lk/home.html"
 
     def get_context_data(self, **kwargs):
@@ -282,11 +248,11 @@ class ResponseSuccessView(DeleteView):
     template_name = "product_response/success.html"
 
 
-class ProductResponseView(ValidateAuthCompany, TemplateView):
+class ProductResponseView(CompanyLoginRequiredMixin, TemplateView):
     template_name = "product_response/all_responses.html"
 
     def get_context_data(self, **kwargs):
-        if self.auth_is_company():
+        if self.user_is_worker():
             product_responses = ProductResponse.objects.filter(
                 product_option__product__company=self.request.user.worker.company
             ).order_by("-id")

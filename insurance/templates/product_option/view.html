@@ -85,7 +85,7 @@
     <div class="row">
       <div class="d-flex justify-content-center">
         <a href="{% url 'home' %}" class="btn btn-outline-secondary m-1"><< На главную</a>
-        {% if request.user ==  product_option.product.company %}
+        {% if request.user.worker.company ==  product_option.product.company %}
         <a href="{% url 'product_option_update' product_option.pk %}" class="btn btn-outline-secondary m-1">Редактировать опции</a>
         <a href="{% url 'product_option_delete' product_option.pk %}" class="btn btn-outline-danger m-1" onclick="return confirm('Точно удалить?');">Удалить</a>
         {% endif %}

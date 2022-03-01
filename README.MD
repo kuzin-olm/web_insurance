@@ -23,10 +23,33 @@
 - python 3.8
 - postgres 14
 - django 3.2.*
+- elasticsearch 7.17
+- rabbitmq 3.9 + celery
+- redis 7.0
 
 # Старт
 Чтобы поднять приложение:
 
-`docker-compose up -d`
+1. ".env.example" переименовать в ".env"
+2. заполнить файл ".env"
+3. в первый запуск:
 
-<a href="http://localhost:8000/">Открыть в браузере</a> 
+    ````
+    docker-compose up -d
+    
+    docker-compose exec web python manage.py makemigrations
+    docker-compose exec web python manage.py migrate
+    
+    docker-compose exec web python manage.py search_index --create
+    
+    docker-compose exec web python manage.py migrate django_celery_results
+    
+    docker-compose down
+    ````
+
+4. для последующих запусков достаточно: 
+
+   `docker-compose up -d`
+
+
+5. <a href="http://localhost:8000/">Открыть в браузере</a> 

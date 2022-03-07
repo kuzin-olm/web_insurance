@@ -13,6 +13,8 @@ from .forms import (
 
 from .view_mixins import CompanyLoginRequiredMixin
 
+from .serializers import product_response_serialize
+
 from users.models import Company, User, Worker
 from search.forms import SearchFilterForm
 
@@ -130,19 +132,17 @@ class ProductOptionDetailView(DetailView):
             product_response.save()
 
             # отправка уведомления на почту компании о новом отклике
-            to = product_response.product_option.product.company.email
-            fullname = product_response.full_name
-            phone = product_response.phone
-            email = product_response.email
+            data = product_response_serialize(product_response)
             url_product = request.build_absolute_uri(
                 reverse(
                     "product_option_detail",
                     kwargs={"pk": product_response.product_option.pk},
                 )
             )
+            data["url_product"] = url_product
 
             send_mail_on_response_product.apply_async(
-                (fullname, phone, email, url_product, to),
+                (data,),
                 retry=True,
                 retry_policy={
                     "max_retries": 5,

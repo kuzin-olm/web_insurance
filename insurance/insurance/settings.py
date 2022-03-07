@@ -169,8 +169,8 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 LOGIN_REDIRECT_URL = reverse_lazy("home")
-LOGIN_URL = reverse_lazy("company_login")
-LOGOUT_URL = reverse_lazy("company_logout")
+LOGIN_URL = reverse_lazy("user_login")
+LOGOUT_URL = reverse_lazy("user_logout")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

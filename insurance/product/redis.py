@@ -7,7 +7,7 @@ PRODUCT_OPTION_KEY = "product_option_pk_"
 def get_and_incr_view_count_product_option(pk):
     """
     Возвращает счетчик просмотров ProductOption по pk модели,
-    предварительно инкркментировав.
+    предварительно инкрементировав.
     """
     product_option_key = f"{PRODUCT_OPTION_KEY}{pk}"
     cache.get_or_set(product_option_key, 0)

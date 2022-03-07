@@ -1,8 +1,7 @@
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
 
-from .models import ProductOption, Product, ProductCategory
-from users.models import Company
+from .models import ProductOption
 
 
 @registry.register_document
@@ -24,5 +23,3 @@ class ProductOptionDocument(Document):
     class Django:
         model = ProductOption
         fields = ["id", "price", "expire", "rate", "is_active"]
-
-        # related_models = [Product, ProductCategory, Company]

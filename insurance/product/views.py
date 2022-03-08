@@ -13,13 +13,15 @@ from .forms import (
 
 from .view_mixins import CompanyLoginRequiredMixin
 
+from .serializers import product_response_serialize
+
 from users.models import Company, User, Worker
 from search.forms import SearchFilterForm
 
 from .tasks import send_mail_on_response_product
 from .redis import (
     get_and_incr_view_count_product_option,
-    get_all_view_count_product_option,
+    get_view_count_product_option_from_list,
 )
 
 
@@ -130,19 +132,17 @@ class ProductOptionDetailView(DetailView):
             product_response.save()
 
             # отправка уведомления на почту компании о новом отклике
-            to = product_response.product_option.product.company.email
-            fullname = product_response.full_name
-            phone = product_response.phone
-            email = product_response.email
+            data = product_response_serialize(product_response)
             url_product = request.build_absolute_uri(
                 reverse(
                     "product_option_detail",
                     kwargs={"pk": product_response.product_option.pk},
                 )
             )
+            data["url_product"] = url_product
 
             send_mail_on_response_product.apply_async(
-                (fullname, phone, email, url_product, to),
+                (data,),
                 retry=True,
                 retry_policy={
                     "max_retries": 5,
@@ -230,11 +230,14 @@ class CabinetView(CompanyLoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         products = Product.objects.filter(
-            company=self.request.user.worker.company
+            company__worker__user=self.request.user
         ).order_by("id")
         kwargs["products"] = products
 
-        view_counts = get_all_view_count_product_option()
+        product_option_pks = ProductOption.objects.filter(
+            product__company__worker__user=self.request.user
+        ).values_list("pk", flat=True)
+        view_counts = get_view_count_product_option_from_list(product_option_pks)
         kwargs["view_counts"] = {
             key.split("_")[-1]: value for key, value in view_counts.items()
         }
@@ -254,7 +257,7 @@ class ProductResponseView(CompanyLoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         if self.user_is_worker():
             product_responses = ProductResponse.objects.filter(
-                product_option__product__company=self.request.user.worker.company
+                product_option__product__company__worker__user=self.request.user
             ).order_by("-id")
             kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)

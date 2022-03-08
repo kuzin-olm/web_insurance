@@ -12,7 +12,7 @@ def send_mail_on_response_product(product_response: dict):
 
     subject = "Отклик на ваш продукт"
     to = product_response.get("company_email")
-    fullname = product_response.get("fullname")
+    fullname = product_response.get("full_name")
     phone = product_response.get("phone")
     email = product_response.get("email")
     url_product = product_response.get("url_product")

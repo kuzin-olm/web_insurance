@@ -28,3 +28,12 @@ def get_all_view_count_product_option():
     """
     product_option_key_all = f"{PRODUCT_OPTION_KEY}*"
     return cache.get_many(cache.keys(product_option_key_all))
+
+
+def get_view_count_product_option_from_list(product_option_pks: list):
+    """
+    Возвращает dict со счетчиком просмотров для каждого pk из product_option_pks.
+    """
+    product_option_keys = [f"{PRODUCT_OPTION_KEY}{pk}" for pk in product_option_pks]
+    return cache.get_many(product_option_keys)
+

@@ -21,7 +21,7 @@ from search.forms import SearchFilterForm
 from .tasks import send_mail_on_response_product
 from .redis import (
     get_and_incr_view_count_product_option,
-    get_all_view_count_product_option,
+    get_view_count_product_option_from_list,
 )
 
 
@@ -230,11 +230,14 @@ class CabinetView(CompanyLoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         products = Product.objects.filter(
-            company=self.request.user.worker.company
+            company__worker__user=self.request.user
         ).order_by("id")
         kwargs["products"] = products
 
-        view_counts = get_all_view_count_product_option()
+        product_option_pks = ProductOption.objects.filter(
+            product__company__worker__user=self.request.user
+        ).values_list("pk", flat=True)
+        view_counts = get_view_count_product_option_from_list(product_option_pks)
         kwargs["view_counts"] = {
             key.split("_")[-1]: value for key, value in view_counts.items()
         }
@@ -254,7 +257,7 @@ class ProductResponseView(CompanyLoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         if self.user_is_worker():
             product_responses = ProductResponse.objects.filter(
-                product_option__product__company=self.request.user.worker.company
+                product_option__product__company__worker__user=self.request.user
             ).order_by("-id")
             kwargs["product_responses"] = product_responses
         return super().get_context_data(**kwargs)
